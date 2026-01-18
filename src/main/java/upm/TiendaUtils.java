@@ -315,7 +315,7 @@ public class TiendaUtils {
     }
 
     public static void logError(String errorMessage) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("../resources/LogsTienda.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("LogsTienda.txt", true))) {
             writer.write(errorMessage);
             writer.newLine();
         } catch (IOException e) {
