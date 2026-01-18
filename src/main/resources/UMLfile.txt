@@ -325,8 +325,42 @@ class ValidatedCommand {
     + ValidatedCommand(command : Command, parameters : String[])
 }
 
+ class ServiceAdded {
+        - id : Long
+        - idTicket : String
+        - service : Service
+
+        + ServiceAdded(idTicket : String, service : Service)
+        + getTicketId() : String
+        + getService() : Service
+}
+
+ class ProductAdded {
+        - id : Long
+        - idTicket : String
+        - product : Product
+        - cuantity : int
+        - personalizedTexts : List<String>
+
+        + ProductAdded(idTicket : String, product : Product, cuantity : int, personalizedTexts : List<String>)
+        + addText(text : String) : void
+        + getTicketId() : String
+        + getProduct() : Product
+        + getCuantity() : int
+        + getPersonalizedTexts() : List<String>
+}
 
 
+class AssignedTickets {
+        - ticketId : String
+        - cashierId : String
+
+        + AssignedTickets(ticketId : String, cashierId : String)
+        + getTicketId() : String
+        + setTicketId(ticketId : String) : void
+        + getCashierId() : String
+        + set
+}
 
 ' -------------------------
 ' Herencia
@@ -334,110 +368,59 @@ class ValidatedCommand {
 
 Product <|-- ProductCampusFood
 Product <|-- ProductMeeting
-Client <|-- ClientCompany
+Product <|-- CustomizableProduct
 
-' -------------------------
-' Asociaciones
-' -------------------------
-
-' Client → Cashier (Many-to-One)
-Client --> Cashier : cashier
-
-' Cashier → Ticket (1..* transient)
-Cashier --> "0..*" Ticket : tickets
-
-' Ticket → TicketItem (1..* transient)
-Ticket --> "0..*" TicketItem : items
-
-' TicketItem → ProductItem / ServiceItem (herencia)
 TicketItem <|-- ProductItem
 TicketItem <|-- ServiceItem
 
-' ProductItem → Product
-ProductItem --> Product : product
+Client <|-- ClientCompany
 
-' ServiceItem → Service
-ServiceItem --> Service : service
-
-' Catalog<T> → Product / Service
-Catalog --> Product : items
-Catalog --> Service : items
-
-' Tienda (static) → Catalog<Product>, Catalog<Service>, Cashier, Client
-Tienda --> Catalog : productCatalog
-Tienda --> Catalog : servicesCatalog
-Tienda --> Cashier : cashiers
-Tienda --> Client : clients
-
-
-' Tienda usa Command y ValidatedCommand
-Tienda ..> Command
+Tienda *-- Product
+Tienda *-- Service
+Tienda *-- Cashier
+Tienda --HibernateUtils
+Tienda ..> Utils
+Tienda --> TiendaUtils
+Tienda --> Command
 Tienda ..> ValidatedCommand
-
-' Tienda usa TiendaUtils
-Tienda ..> TiendaUtils
-
-' Tienda crea Cashier
-Tienda ..> Cashier
-
-' Tienda usa Set<Cashier> (colección)
-Tienda ..> Cashier : cashiers
-
-' Tienda usa Client
-Tienda ..> Client : clients
-
-' Tienda usa Product
-Tienda ..> Product : productCatalog
-
-' Tienda usa Service
-Tienda ..> Service : servicesCatalog
-
-' Tienda usa RandomGenerator
-Tienda ..> RandomGenerator
-
-' Tienda crea Ticket
-Tienda ..> Ticket
-Tienda ..> HibernateUtils
-' Tienda usa TicketType
-Tienda ..> TicketType
-
-' Tienda usa LocalDate, LocalDateTime, DateTimeFormatter
-Tienda ..> LocalDate
-Tienda ..> LocalDateTime
-Tienda ..> DateTimeFormatter
-
-' Tienda usa Arrays y Collections
-Tienda ..> Arrays
-Tienda ..> Collections
-
-' Tienda usa System (System.out)
-Tienda ..> System
-
-
-
-RandomGenerator --> Catalog : catalog
-RandomGenerator --> Cashier : cashiers
-RandomGenerator --> Client : clients
-
-icket --> TicketState
-Ticket --> TicketType
-
-Client --> ClientType : type
-
-' Client tiene una relación Many-to-One con Cashier
-Client --> Cashier : cashier
-
-' Client usa RandomGenerator para generar DNI
-Client --> RandomGenerator : generateDNI()
-
-
-' Command → ValidatedCommand
-ValidatedCommand --> Command
-
 Command --> Utils
-Ticket --> Utils
 
 
-ProductCategory "1" --> "*" Product : categorizes >
+Tienda o-- Producto : catalog
+Tienda o-- Cashier : cashiers
+Tienda o-- Client : clients
+
+Ticket ..> RandomGenerator
+Product ..> RandomGenerator
+Cashier ..> RandomGenerator
+Cient ..> RandomGenerator
+Tienda ..> RandomGenerator
+TiendaUtils ..> RandomGenerator
+
+TiendaUtils ..> Product
+TiendaUtils ..> Service
+TiendaUtils ..> Client
+TiendaUtils ..> Cashier
+
+Producto --> ProductCategory
+
+ProductItem *-- Product
+ServiceItem *-- Service
+
+Ticket *-- TicketItem : items
+Ticket ..> TicketType : ticketType
+Ticket ..> TicketState : currentState
+
+Utils ..> IdentifierType
+
+Client *-- ClientType
+
+Tienda *-- Catalog : productCatalog
+Tienda *-- Catalog : serviceCatalog
+ServiceAdded --> Service : many-to-one
+ProductAdded --> Product : many-to-one
+
+
+
 
 @enduml
